@@ -1,0 +1,32 @@
+platform :ios, '16.0'
+
+flutter_application_path = '..'
+load File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb')
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  # Add your Firebase pods directly
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Core'
+  pod 'GoogleSignIn'
+
+  # This loads all Flutter-managed plugins automatically
+  install_all_flutter_pods(flutter_application_path)
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+      config.build_settings['LIBRARY_SEARCH_PATHS'] = [
+        '$(inherited)',
+        '$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)',
+        '$(TOOLCHAIN_DIR)/usr/lib/swift'
+      ]
+    end
+  end
+end
